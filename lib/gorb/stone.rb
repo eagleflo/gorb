@@ -5,31 +5,44 @@ class Stone
   attr_accessor :group
   attr_reader :board, :point, :color
 
-  @@letters = %w{A B C D E F G H J K L M N O P Q R S T}
-
   def initialize(board, point, color)
     @board = board
     @point = point
     @color = color
+
+    if @board.size == "9x9"
+      @letters = %w{A B C D E F G H J}
+    elsif @board.size == "13x13"
+      @letters = %w{A B C D E F G H J K L M N}
+    elsif @board.size == "19x19"
+      @letters = %w{A B C D E F G H J K L M N O P Q R S T}
+    end
+
+    if (@point[1, 2].to_i > @board.size.split('x')[0].to_i or
+        not @letters.index(@point[0]))
+      raise ArgumentError, "Invalid point"
+    end
+
     @group = self.find_group
   end
 
   # Return the neighboring points of the Stone.
   def neighbors
-    x, y = @@letters.index(@point[0]), @point[1, 2].to_i
+    x, y = @letters.index(@point[0]), @point[1, 2].to_i
     neighbors = []
     unless y == 1
-      neighbors << @@letters[x] + (y - 1).to_s
+      neighbors << @letters[x] + (y - 1).to_s
     end
-    unless y == 19
-      neighbors << @@letters[x] + (y + 1).to_s
+    unless y == @board.size.split('x')[0].to_i
+      neighbors << @letters[x] + (y + 1).to_s
     end
-    unless @@letters[x] == "A"
-      neighbors << @@letters[x-1] + y.to_s
+    unless @letters[x] == @letters.first
+      neighbors << @letters[x-1] + y.to_s
     end
-    unless @@letters[x] == "T"
-      neighbors << @@letters[x+1] + y.to_s
+    unless @letters[x] == @letters.last
+      neighbors << @letters[x+1] + y.to_s
     end
+    return neighbors
   end
 
   # Return the liberties of the Stone.

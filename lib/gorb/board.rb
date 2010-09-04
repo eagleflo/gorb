@@ -3,14 +3,15 @@ require 'gorb/stone'
 class Board
 
   attr_accessor :groups, :turn
-  attr_reader :black, :white, :handicap, :komi
+  attr_reader :black, :white, :handicap, :komi, :size
 
   # Initialize a new Board instance. Requires two Player objects and a
   # handicap as arguments. The handicap should be an integer from 0 to 9.
-  def initialize(black=nil, white=nil, handicap=0, komi=6.5)
+  def initialize(black=nil, white=nil, handicap=0, komi=6.5, size="19x19")
     @black = black ||= Player.new("Black")
     @white = white ||= Player.new("White")
     @komi = komi
+    @size = size
     @groups = []
     @hashes = []
     @turn = black
@@ -20,13 +21,22 @@ class Board
     @komi = 0.5 if handicap > 0
     @turn = white if handicap > 1
 
-    handicap_stones = %w{Q16 D4 Q4 D16 K10 D10 Q10 K16 K4}
+    if size == "9x9"
+      handicap_stones = %w{G7 C3 G3 C7 E5 C5 G5 E7 E3}
+    elsif size == "13x13"
+      handicap_stones = %w{K10 D4 K4 D10 G7 D7 K7 G10 G4}
+    elsif size == "19x19"
+      handicap_stones = %w{Q16 D4 Q4 D16 K10 D10 Q10 K16 K4}
+    else
+      raise ArgumentError, "Incorrect board size"
+    end
+
     case @handicap
     when 2..5, 7, 9
       handicap_stones[0..(@handicap-1)].each {|s| self.add_stone(s, :black)}
     when 6, 8
       handicap_stones[0..@handicap].each {|s| self.add_stone(s, :black)}
-      self.remove_stone("K10")
+      self.remove_stone(handicap_stones[4]) # Middle stone
     end
   end
 

@@ -15,6 +15,8 @@ class TestStone < Test::Unit::TestCase
     stone = Stone.new(board, "K11", :white)
     assert_equal 2, board.groups.size
     assert_equal 2, group.size
+    assert_nothing_raised { Stone.new(board, "T19", :black) }
+    assert_raise(ArgumentError) { Stone.new(board, "T20", :black) }
   end
 
   def test_neighbors
@@ -30,6 +32,11 @@ class TestStone < Test::Unit::TestCase
     assert_equal 2, stone.neighbors.size
     assert stone.neighbors.include? "A2"
     assert stone.neighbors.include? "B1"
+
+    stone = Stone.new(board, "T19", :black)
+    assert_equal 2, stone.neighbors.size
+    assert stone.neighbors.include? "T18"
+    assert stone.neighbors.include? "S19"
   end
 
   def test_stone_liberties
@@ -49,6 +56,16 @@ class TestStone < Test::Unit::TestCase
     assert_equal 4, board.groups.size
     board.add_stone("K10", :black)
     assert_equal 1, board.groups.size
+  end
+
+  def test_smaller_boards
+    board = Board.new(nil, nil, 9, 0, "9x9")
+    assert_nothing_raised { Stone.new(board, "J9", :black) }
+    assert_raise(ArgumentError) { Stone.new(board, "Q16", :black)}
+
+    board = Board.new(nil, nil, 9, 0, "13x13")
+    assert_nothing_raised { Stone.new(board, "N13", :black) }
+    assert_raise(ArgumentError) { Stone.new(board, "Q16", :black)}
   end
 
 end
