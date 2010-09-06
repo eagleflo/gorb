@@ -93,7 +93,10 @@ class Board
   # Recalculate all liberties. Removes dead groups from the table.
   def resolve!(added_stone)
     @groups.each do |group|
-      group.liberties! if not group.include? added_stone
+      if not group.include? added_stone
+        libs = group.liberties!
+        self.send(added_stone.color).captured += group.size if libs == 0
+      end
     end
     # The group of last added stone is checked after others to make kills by
     # 'suicide' (filling dame) work.

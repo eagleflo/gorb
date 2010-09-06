@@ -34,6 +34,20 @@ class TestBoard < Test::Unit::TestCase
     assert_equal 2, board.groups.size
   end
 
+  def test_capture
+    board = Board.new
+    board.add_stone("A1")
+    board.add_stone("A2")
+    board.add_stone("A3")
+    board.add_stone("B1")
+    assert_equal 1, board.white.captured
+
+    board.add_stone("B2")
+    board.add_stone("A1")
+    board.add_stone("C1")
+    assert_equal 3, board.black.captured
+  end
+
   def test_remove_stone
     board = Board.new
     board.add_stone("K10")
