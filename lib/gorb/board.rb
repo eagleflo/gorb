@@ -5,8 +5,9 @@ class Board
   attr_accessor :groups, :turn
   attr_reader :black, :white, :handicap, :komi, :size
 
-  # Initialize a new Board instance. Requires two Player objects and a
-  # handicap as arguments. The handicap should be an integer from 0 to 9.
+  # Initialize a new Board instance. Requires two Player objects, a handicap,
+  # a komi and a size as arguments. The handicap should be an integer from
+  # 0 to 9. Komi can be negative. Size should be either 9x9, 13x13 or 19x19.
   def initialize(black=nil, white=nil, handicap=0, komi=6.5, size="19x19")
     @black = black ||= Player.new("Black")
     @white = white ||= Player.new("White")
@@ -71,43 +72,6 @@ class Board
     stone.board.groups.delete(stone.group) if stone.group.size == 0
   end
 
-  # Search the Board for stones in given points.
-  def search(points)
-    stones = []
-    @groups.each do |group|
-      group.each do |stone|
-        stones << stone if points.include? stone.point
-      end
-    end
-    return stones
-  end
-
-  def stone_at?(point)
-    @groups.any? {|group| group.include? point}
-  end
-
-  def stones_at?(points)
-    points.all? {|point| self.stone_at? point}
-  end
-
-  # Recalculate all liberties. Removes dead groups from the table.
-  def resolve!(added_stone)
-    @groups.each do |group|
-      if not group.include? added_stone
-        libs = group.liberties!
-        self.send(added_stone.color).captured += group.size if libs == 0
-      end
-    end
-    # The group of last added stone is checked after others to make kills by
-    # 'suicide' (filling dame) work.
-    added_stone.group.liberties!
-  end
-
-  # Generate a hash of a board situation. Used to enforce ko rule.
-  def generate_hash
-    @groups.flatten.inject([]) {|hash, stone| hash << stone.to_s}.sort.hash
-  end
-
   def legal?(point, color)
     # Check if the point if already occupied.
     return false if self.stone_at? point
@@ -136,6 +100,43 @@ class Board
     dummy_board.resolve!(stone)
     legal = false if @hashes.include? dummy_board.generate_hash
     return legal
+  end
+
+  # Recalculate all liberties. Removes dead groups from the table.
+  def resolve!(added_stone)
+    @groups.each do |group|
+      if not group.include? added_stone
+        libs = group.liberties!
+        self.send(added_stone.color).captured += group.size if libs == 0
+      end
+    end
+    # The group of last added stone is checked after others to make kills by
+    # 'suicide' (filling dame) work.
+    added_stone.group.liberties!
+  end
+
+  # Search the Board for stones in given points.
+  def search(points)
+    stones = []
+    @groups.each do |group|
+      group.each do |stone|
+        stones << stone if points.include? stone.point
+      end
+    end
+    return stones
+  end
+
+  def stone_at?(point)
+    @groups.any? {|group| group.include? point}
+  end
+
+  def stones_at?(points)
+    points.all? {|point| self.stone_at? point}
+  end
+
+  # Generate a hash of a board situation. Used to enforce ko rule.
+  def generate_hash
+    @groups.flatten.inject([]) {|hash, stone| hash << stone.to_s}.sort.hash
   end
 
   def turn_over
