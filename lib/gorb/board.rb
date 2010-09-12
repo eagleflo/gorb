@@ -140,6 +140,25 @@ class Board
     points.all? {|point| self.stone_at? point}
   end
 
+  # Return the neighboring points of the point.
+  def neighbors(point)
+    x, y = @letters.index(point[0]), point[1, 2].to_i
+    neighbors = []
+    unless y == 1
+      neighbors << @letters[x] + (y - 1).to_s
+    end
+    unless y == self.size.split('x')[0].to_i
+      neighbors << @letters[x] + (y + 1).to_s
+    end
+    unless @letters[x] == @letters.first
+      neighbors << @letters[x-1] + y.to_s
+    end
+    unless @letters[x] == @letters.last
+      neighbors << @letters[x+1] + y.to_s
+    end
+    return neighbors
+  end
+
   # Generate a hash of a board situation. Used to enforce ko rule.
   def generate_hash
     @groups.flatten.inject([]) {|hash, stone| hash << stone.to_s}.sort.hash

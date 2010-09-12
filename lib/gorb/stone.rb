@@ -20,21 +20,7 @@ class Stone
 
   # Return the neighboring points of the Stone.
   def neighbors
-    x, y = @board.letters.index(@point[0]), @point[1, 2].to_i
-    neighbors = []
-    unless y == 1
-      neighbors << @board.letters[x] + (y - 1).to_s
-    end
-    unless y == @board.size.split('x')[0].to_i
-      neighbors << @board.letters[x] + (y + 1).to_s
-    end
-    unless @board.letters[x] == @board.letters.first
-      neighbors << @board.letters[x-1] + y.to_s
-    end
-    unless @board.letters[x] == @board.letters.last
-      neighbors << @board.letters[x+1] + y.to_s
-    end
-    return neighbors
+    @board.neighbors(@point)
   end
 
   # Return the liberties of the Stone.
