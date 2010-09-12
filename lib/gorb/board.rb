@@ -120,6 +120,9 @@ class Board
 
   # Search the Board for stones in given points.
   def search(points)
+    if points.is_a?(String)
+      points = [points]
+    end
     stones = []
     @groups.each do |group|
       group.each do |stone|
