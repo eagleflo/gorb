@@ -652,4 +652,63 @@ class TestBoard < Test::Unit::TestCase
     assert board.stone_at?("E1")
     assert board.stone_at?("F1")
   end
+
+  def test_scoring
+    # Easy, basic example.
+    diagram = <<-END
+    ---------------------
+    | . . . . X O . . . |
+    | . . . . X O . . . |
+    | . . . . X O . . . |
+    | . . . . X O . . . |
+    | . . . . X O . . . |
+    | . . . . X O . . . |
+    | . . . . X O . . . |
+    | . . . . X O . . . |
+    | . . . . X O . . . |
+    ---------------------
+    END
+    board = Board.new(nil, nil, 0, 0, "9x9")
+    board.read(diagram)
+    scoring = board.scoring
+    assert_equal 36, scoring[:black]
+    assert_equal 27, scoring[:white]
+  end
+
+  def test_scoring_full
+    # More complicated full board game.
+    diagram = <<-END
+       White (O) has captured 5 pieces
+       Black (X) has captured 3 pieces
+
+       A B C D E F G H J K L M N O P Q R S T        Last move: White S15
+    19 . . . . . . X O O O O O . O X . . . . 19
+    18 . . . . X X X X O X X O . O X X . . . 18
+    17 . . . . X X X O O X X O . . O X X X X 17
+    16 . X X X O X O O X X X X O O O X O X O 16
+    15 X X O O O X O O O X O O . . . O O(O)O 15
+    14 O O . O . O X O X X O . . . . . O O O 14
+    13 O O O O . O X X . X X O . O . O . . O 13
+    12 X O X O . O X . . X O . O X O O . O X 12
+    11 X X X O O X O X . X O . O X X X O O X 11
+    10 X O X X X X O X . X O O X . . X X X X 10
+     9 . . . . . X O O X X O X X . . . . . .  9
+     8 . . . . X X X O O X X . . . . . . . .  8
+     7 . . . X O O O . O O X X . . . . X . .  7
+     6 . . . X O . . . . . O O X X X . . . .  6
+     5 . . . X O . . . . . . . O O O X X . X  5
+     4 . . . X X O . . . O . . O . O O X X O  4
+     3 . . . . X O . . . . . . . . . . O O O  3
+     2 . . X . X O . . . . . . . . . . . . .  2
+     1 . . . X O O . . . . . . . . . . . . .  1
+       A B C D E F G H J K L M N O P Q R S T
+    END
+    board = Board.new
+    board.read(diagram)
+    board.mark_dead_group("B10")
+    scoring = board.scoring
+    assert_equal 90, scoring[:black]
+    assert_equal 89.5, scoring[:white]
+  end
+
 end

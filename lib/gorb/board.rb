@@ -3,7 +3,7 @@ require 'gorb/stone'
 class Board
 
   attr_accessor :groups, :turn
-  attr_reader :black, :white, :handicap, :komi, :size, :letters
+  attr_reader :black, :white, :handicap, :komi, :size, :letters, :dead_groups
 
   # Initialize a new Board instance. Requires two Player objects, a handicap,
   # a komi and a size as arguments. The handicap should be an integer from
@@ -16,6 +16,7 @@ class Board
     @groups = []
     @hashes = []
     @turn = black
+    @dead_groups = []
 
     raise ArgumentError, "Incorrect handicap" if handicap < 0 or handicap > 9
     @handicap = handicap
@@ -172,6 +173,84 @@ class Board
       @turn = @black
     end
     @hashes << generate_hash
+  end
+
+  # Mark dead groups after the game has ended to ease the scoring.
+  def mark_dead_group(stone)
+    group = self.search(stone).first.group
+    @dead_groups << group
+  end
+
+  # Count the score.
+  def scoring
+    white, black = 0, 0
+
+    # Remove dead groups from board (or its clone).
+    score_board = Marshal.load(Marshal.dump(self))
+    score_board.dead_groups.each do |group|
+      score_board.groups.delete(group)
+      if group.first.color == :white
+        black += group.size
+      elsif group.first.color == :black
+        white += group.size
+      end
+    end
+
+    # Collect all empty points into a list.
+    empty_points = []
+    side = self.size.split('x')[0].to_i
+    for i in (0..side-1)
+      for j in (0..side-1)
+        coords = @letters[i] + (side - j).to_s
+        if not score_board.stone_at?(coords)
+          empty_points << coords
+        end
+      end
+    end
+
+    # Flood fill and remove from list of empty points.
+    areas = []
+    until empty_points.empty?
+      current_area = []
+      first_point = empty_points.first
+      remove_from_empty_points = Proc.new do |point|
+        if empty_points.include? point
+          current_area << empty_points.delete(point)
+          for neighbor in self.neighbors(point)
+            remove_from_empty_points.call(neighbor)
+          end
+        end
+      end
+      remove_from_empty_points.call(first_point)
+      areas << current_area
+    end
+
+    # Check bordering stones or groups: if uniform, award points.
+    areas.each do |area|
+      colors = []
+      area.each do |empty_point|
+        self.neighbors(empty_point).each do |neighbor|
+          stone = score_board.search(neighbor).first
+          if stone
+            colors << stone.color unless colors.include? stone.color
+          end
+        end
+      end
+      if colors == [:white]
+        white += area.size
+      elsif colors == [:black]
+        black += area.size
+      end
+    end
+
+    # Add captured stones to the total.
+    white += score_board.white.captured
+    black += score_board.black.captured
+
+    # Add komi.
+    white += self.komi
+
+    {:white => white, :black => black}
   end
 
   # Read a board situation from a (possibly incomplete) diagram.
