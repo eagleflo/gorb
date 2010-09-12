@@ -11,6 +11,10 @@ class Group < Array
       group.each {|stone| self << stone}
       @board.groups.delete group
     end
+    # Group references need to be updated for each stone after a merge.
+    self.each do |stone|
+      stone.group = self
+    end
   end
 
   def include?(point)
