@@ -1,6 +1,6 @@
 Gem::Specification.new do |gem|
   gem.name    = 'gorb'
-  gem.version = '0.0.1'
+  gem.version = '0.1'
 
   gem.summary = "Ruby go library"
   gem.description = "gorb is a go (board game) library written in pure Ruby."
