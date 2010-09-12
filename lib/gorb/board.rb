@@ -142,6 +142,7 @@ class Board
     @groups.flatten.inject([]) {|hash, stone| hash << stone.to_s}.sort.hash
   end
 
+  # Pass the turn and generate a hash of the board situation for checking ko.
   def turn_over
     if @turn == @black
       @turn = @white
