@@ -10,16 +10,8 @@ class Stone
     @point = point
     @color = color
 
-    if @board.size == "9x9"
-      @letters = %w{A B C D E F G H J}
-    elsif @board.size == "13x13"
-      @letters = %w{A B C D E F G H J K L M N}
-    elsif @board.size == "19x19"
-      @letters = %w{A B C D E F G H J K L M N O P Q R S T}
-    end
-
     if (@point[1, 2].to_i > @board.size.split('x')[0].to_i or
-        not @letters.index(@point[0]))
+        not @board.letters.index(@point[0]))
       raise ArgumentError, "Invalid point"
     end
 
@@ -28,19 +20,19 @@ class Stone
 
   # Return the neighboring points of the Stone.
   def neighbors
-    x, y = @letters.index(@point[0]), @point[1, 2].to_i
+    x, y = @board.letters.index(@point[0]), @point[1, 2].to_i
     neighbors = []
     unless y == 1
-      neighbors << @letters[x] + (y - 1).to_s
+      neighbors << @board.letters[x] + (y - 1).to_s
     end
     unless y == @board.size.split('x')[0].to_i
-      neighbors << @letters[x] + (y + 1).to_s
+      neighbors << @board.letters[x] + (y + 1).to_s
     end
-    unless @letters[x] == @letters.first
-      neighbors << @letters[x-1] + y.to_s
+    unless @board.letters[x] == @board.letters.first
+      neighbors << @board.letters[x-1] + y.to_s
     end
-    unless @letters[x] == @letters.last
-      neighbors << @letters[x+1] + y.to_s
+    unless @board.letters[x] == @board.letters.last
+      neighbors << @board.letters[x+1] + y.to_s
     end
     return neighbors
   end

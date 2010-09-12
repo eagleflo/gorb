@@ -3,7 +3,7 @@ require 'gorb/stone'
 class Board
 
   attr_accessor :groups, :turn
-  attr_reader :black, :white, :handicap, :komi, :size
+  attr_reader :black, :white, :handicap, :komi, :size, :letters
 
   # Initialize a new Board instance. Requires two Player objects, a handicap,
   # a komi and a size as arguments. The handicap should be an integer from
@@ -23,10 +23,13 @@ class Board
     @turn = white if handicap > 1
 
     if size == "9x9"
+      @letters = %w{A B C D E F G H J}
       handicap_stones = %w{G7 C3 G3 C7 E5 C5 G5 E7 E3}
     elsif size == "13x13"
+      @letters = %w{A B C D E F G H J K L M N}
       handicap_stones = %w{K10 D4 K4 D10 G7 D7 K7 G10 G4}
     elsif size == "19x19"
+      @letters = %w{A B C D E F G H J K L M N O P Q R S T}
       handicap_stones = %w{Q16 D4 Q4 D16 K10 D10 Q10 K16 K4}
     else
       raise ArgumentError, "Incorrect board size"
