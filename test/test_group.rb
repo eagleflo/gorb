@@ -3,6 +3,62 @@ require 'gorb'
 
 class TestGroup < Test::Unit::TestCase
 
+  def test_merge
+    board = Board.new
+    board.add_stone("A12", :white)
+    board.add_stone("C12", :white)
+    assert_equal 2, board.groups.size
+    board.add_stone("A11", :white)
+    board.add_stone("B11", :white)
+    board.add_stone("C11", :white)
+    assert_equal 1, board.groups.size
+    board.add_stone("A10", :white)
+    assert_equal 1, board.groups.size
+    assert board.stone_at?("A10")
+    board.add_stone("C10", :white)
+    board.add_stone("D10", :white)
+    assert_equal 1, board.groups.size
+    assert board.stone_at?("A10")
+  end
+
+  def test_merge_m17
+    diagram = <<-END
+       A B C D E F G H J K L M N
+    19 . . . . . . X O O O O O .
+    18 . . . . X X X X O X X O .
+    17 . . . . X X X O O X X O .
+    16 . X X X O X O O X X X X O
+    15 X X O O O X O O O X O O .
+    14 O O . O . O X O X X O . .
+    13 O O O O . O X X . X X O .
+    END
+    board = Board.new
+    board.read(diagram)
+    assert_equal 10, board.groups.size
+    assert board.stone_at?("M17")
+  end
+
+  def test_merge_a10
+    diagram = <<-END
+       A B C D 
+    19 . . . . 
+    18 . . . . 
+    17 . . . . 
+    16 . X X X 
+    15 X X O O 
+    14 O O . O 
+    13 O O O O 
+    12 X O X O 
+    11 X X X O 
+    10 X O X X 
+     9 . . . . 
+    END
+    board = Board.new
+    board.read(diagram)
+    assert_equal 4, board.groups.size
+    assert board.stone_at?("A10")
+  end
+
   def test_include
     board = Board.new
     stone = board.add_stone("K10")
