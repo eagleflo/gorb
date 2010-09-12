@@ -152,4 +152,34 @@ class Board
     @hashes << generate_hash
   end
 
+  # Read a board situation from a (possibly incomplete) diagram.
+  def read(diagram)
+    # Try to read captured pieces information from gnugo output.
+    black_captured = /Black \(X\) has captured (\d) pieces/.match(diagram)
+    white_captured = /White \(O\) has captured (\d) pieces/.match(diagram)
+
+    if black_captured
+      self.black.captured += black_captured.captures.first.to_i
+    end
+    if white_captured
+      self.white.captured += white_captured.captures.first.to_i
+    end
+
+    diagram.gsub!(/Black.*/, '')
+    diagram.gsub!(/White.*/, '')
+    diagram.gsub!(/N O P/, '')
+    diagram.gsub!(/[A-NP-WYZa-z0-9]/, '')
+    diagram.gsub!(/[-| ():]/, '')
+    diagram.strip().split("\n").each_with_index do |line, i|
+      line.split("").each_with_index do |char, j|
+        coords = @letters[j] + (self.size.split('x')[0].to_i-i).to_s
+        if char == "X"
+          self.add_stone(coords, :black)
+        elsif char == "O"
+          self.add_stone(coords, :white)
+        end
+      end
+    end
+  end
+
 end
