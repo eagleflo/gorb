@@ -3,4 +3,4 @@ gorb is a go (board game) library written in pure Ruby.
 To use it, do the following:
 
     gem build gorb.gemspec
-    gem install gorb-0.0.1.gem
+    gem install gorb-<version>.gem
