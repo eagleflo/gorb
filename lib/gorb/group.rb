@@ -38,9 +38,7 @@ class Group < Array
   end
 
   # Destructive version of the former. Note that this will remove the Group
-  # from the board if it has no liberties, so all the existing groups should
-  # have their liberties checked before checking the liberties of a new group
-  # in order to allow kills by filling dame.
+  # from the board if it has no liberties.
   def liberties!
     libs = self.liberties
     @board.groups.delete(self) if libs == 0
