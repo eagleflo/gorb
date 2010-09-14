@@ -6,6 +6,10 @@ class Group < Array
     self << stone
   end
 
+  def color
+    self.first.color
+  end
+
   def merge(groups)
     groups.each do |group|
       group.each {|stone| self << stone}

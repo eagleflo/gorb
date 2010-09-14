@@ -3,6 +3,12 @@ require 'gorb'
 
 class TestGroup < Test::Unit::TestCase
 
+  def test_color
+    board = Board.new
+    board.add_stone("K10")
+    assert_equal :black, board.groups.first.color
+  end
+
   def test_merge
     board = Board.new
     board.add_stone("A12", :white)
