@@ -138,7 +138,7 @@ class Board
 
   # Return the neighboring points of the point.
   def neighbors(point)
-    x, y = @letters.index(point[0]), point[1, 2].to_i
+    x, y = @letters.index(point.chars.first), point[1, 2].to_i
     neighbors = []
     unless y == 1
       neighbors << @letters[x] + (y - 1).to_s

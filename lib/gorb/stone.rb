@@ -11,7 +11,7 @@ class Stone
     @color = color
 
     if (@point[1, 2].to_i > @board.size.split('x')[0].to_i or
-        not @board.letters.index(@point[0]))
+        not @board.letters.index(@point.chars.first))
       raise ArgumentError, "Invalid point"
     end
 
