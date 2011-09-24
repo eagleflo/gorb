@@ -103,6 +103,7 @@ class Board
     # Check for ko.
     dummy_board.resolve!(stone)
     legal = false if @hashes.include? dummy_board.generate_hash
+
     return legal
   end
 
