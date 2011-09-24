@@ -77,7 +77,7 @@ class Board
   end
 
   def legal?(point, color)
-    # Check if the point if already occupied.
+    # Check if the point is already occupied.
     return false if self.stone_at? point
 
     # The method for checking legality requires placing a test stone to the
